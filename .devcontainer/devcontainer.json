@@ -2,6 +2,10 @@
   "name": "PoSSUM replication",
   "image": "ghcr.io/rocker-org/devcontainer/r-ver:4.5@sha256:40714b9f6327f7684c1b9af10e355da1413d5dda1cd97dafb43e61e540c8bdd1",
   "remoteUser": "rstudio",
+  "remoteEnv": {
+    "CMDSTAN": "/home/rstudio/.cmdstan/cmdstan-2.40.0"
+  },
+  "postCreateCommand": "Rscript .devcontainer/setup.R",
   "hostRequirements": {
     "cpus": 4,
     "memory": "16gb"
