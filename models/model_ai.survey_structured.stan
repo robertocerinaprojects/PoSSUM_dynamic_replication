@@ -11,59 +11,59 @@ data{
   
   // identify obs which have a level 2 area 
   int<lower = 1> yes_area_N;
-  int<lower = 1> yes_area[yes_area_N];
+  array[yes_area_N] int<lower = 1> yes_area;
   int<lower = 1> no_area_N;
-  int<lower = 1> no_area[no_area_N];
+  array[no_area_N] int<lower = 1> no_area;
 
 
 
   // SPATIAL-COMPONENT DATA
-  int area_id[N]; // index of areas in the observed data
+  array[N] int area_id; // index of areas in the observed data
   int<lower=1> area_N; // no. of spatial units
   int<lower=1> kappa; // no. of separate inner-connected groups
-  int group_size[kappa]; // observational units per group
-  int group_idx[area_N]; // index of observations, ordered by group
+  array[kappa] int group_size; // observational units per group
+  array[area_N] int group_idx; // index of observations, ordered by group
   
   int<lower=1> N_edges; // number of adjacency instances
-  int<lower=1, upper=area_N> node1[N_edges]; // node1[i] adjacent to node2[i]
-  int<lower=1, upper=area_N> node2[N_edges]; // node1[i] < node2[i]
-  int<lower=1, upper=kappa> comp_id[area_N]; // ids of groups by areas
+  array[N_edges] int<lower=1, upper=area_N> node1; // node1[i] adjacent to node2[i]
+  array[N_edges] int<lower=1, upper=area_N> node2; // node1[i] < node2[i]
+  array[area_N] int<lower=1, upper=kappa> comp_id; // ids of groups by areas
   
   vector[kappa] inv_sqrt_scaling_factor; // BYM2 scale factor, with singletons 
 
 
 
   // FIXED EFFECTS 
-  int<lower=1> P[J];
+  array[J] int<lower=1> P;
   int<lower=1> P_sum ;
   int<lower=1> P_max ;
   matrix[N, P_sum] Z; // state- level covariate matrix
-  int<lower = 1> Z_id[J, P_max]; // state- level covariate matrix
+  array[J, P_max] int<lower = 1> Z_id; // state- level covariate matrix
 
   // AREA-IND INTERACTION EFFECTS 
-  int<lower=1> P_INT[J];
+  array[J] int<lower=1> P_INT;
   int<lower=1> P_INT_sum ;
   int<lower=1> P_INT_max ;
   matrix[N, P_INT_sum] X; 
-  int<lower = 1> X_id[J, P_INT_max]; 
+  array[J, P_INT_max] int<lower = 1> X_id; 
   int<lower = 1> INT_N;
-  int<lower = 1> INT[INT_N]; 
+  array[INT_N] int<lower = 1> INT; 
 
 
   // DATA INDIVIDIAL-LEVEL EFFECTS
-  int gen_id[N]; // gender level id
+  array[N] int gen_id; // gender level id
   int<lower=1> gen_N; // number of gender levels 
 
-  int eth_id[N]; // ethnicity level id
+  array[N] int eth_id; // ethnicity level id
   int<lower=1> eth_N; // number of ethnicity levels 
 
-  int inc_id[N]; // education level id
+  array[N] int inc_id; // education level id
   int<lower=1> inc_N; // number of education levels 
 
-  int age_id[N]; // age level id
+  array[N] int age_id; // age level id
   int<lower=1> age_N; // number of age levels 
 
-  int v20_id[N]; // 2020 vote level id
+  array[N] int v20_id; // 2020 vote level id
   int<lower=1> v20_N; // number of 2020 vote levels 
 
 

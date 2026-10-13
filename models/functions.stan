@@ -16,8 +16,8 @@ functions {
 * @return Log probability density of ICAR prior up to additive constant
 **/
   real icar_normal_lpdf(vector phi, real spatial_scale,
-                        int[] node1, int[] node2, 
-                        int k, int[] group_size, int[] group_idx,
+                        array[] int node1, array[] int node2, 
+                        int k, array[] int group_size, array[] int group_idx,
                         int has_theta) {
     real lp;
     int pos=1;
@@ -58,7 +58,7 @@ functions {
 */
   vector convolve_bym(vector phi, vector theta,
                       int n, int k,
-                      int[] group_size, int[] group_idx
+                      array[] int group_size, array[] int group_idx
   ) {
     vector[n] convolution;
     int pos=1;
@@ -94,7 +94,7 @@ functions {
   vector convolve_bym2(vector phi_tilde, vector theta_tilde,
                        real spatial_scale,
                        int n, int k,
-                       int[] group_size, int[] group_idx,
+                       array[] int group_size, array[] int group_idx,
                        real rho, vector inv_sqrt_scale_factor
   ) {
     vector[n] convolution;
@@ -131,7 +131,7 @@ functions {
   vector make_phi(vector phi_tilde, real phi_scale,
                   vector inv_sqrt_scale_factor,
                   int n, int k,
-                  int[] group_size, int[] group_idx
+                  array[] int group_size, array[] int group_idx
   ) {
     vector[n] phi;
     int pos=1;
@@ -162,7 +162,7 @@ functions {
   vector make_phi2(vector phi_tilde, vector phi_scale,
                    vector inv_sqrt_scale_factor,
                    int n, int k,
-                   int[] group_size, int[] group_idx
+                   array[] int group_size, array[] int group_idx
   ) {
     vector[n] phi;
     int pos=1;
