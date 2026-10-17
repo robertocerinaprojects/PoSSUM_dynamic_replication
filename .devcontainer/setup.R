@@ -31,6 +31,8 @@ stan_dir <- file.path(
   path.expand("~"), ".cmdstan", paste0("cmdstan-", stan_version)
 )
 
+dir.create(dirname(stan_dir), recursive = TRUE, showWarnings = FALSE)
+
 required_binaries <- file.path(
   stan_dir, "bin", c("stanc", "stansummary")
 )
