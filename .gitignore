@@ -51,3 +51,6 @@ rsconnect/
 
 # Downloaded inputs
 /data/downloaded/
+
+# Processed data
+/data/processed/
