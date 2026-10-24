@@ -54,3 +54,10 @@ rsconnect/
 
 # Processed data
 /data/processed/
+
+# Model outputs
+/output/
+
+# Models
+/models/model_ai.survey_structured
+/models/model_ai.survey_structured_optimised
