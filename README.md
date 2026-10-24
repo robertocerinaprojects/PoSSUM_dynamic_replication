@@ -65,7 +65,7 @@ run_analyses()
 
 This simply prints the plan. **It does not download data or fit anything.**
 
-| Survey period | High configuration | Moderate configuration |
+| Synthetic survey period | High configuration | Moderate configuration |
 | --- | --- | --- |
 | 15–23 August 2024 | `wave1_high` | `wave1_moderate` |
 | 7–12 September 2024 | `wave2_high` | `wave2_moderate` |
@@ -85,7 +85,7 @@ The configuration list, model paths, sampling settings, and random seeds are in 
 
 ## 4. Run one configuration and check it
 
-Start with the final survey wave under High speculation:
+Start with the final synthetic survey wave under High speculation:
 
 ```r
 first_run <- run_analyses("wave5_high", dry_run = FALSE)
@@ -268,13 +268,13 @@ This manual route creates a timestamped run folder and leaves `run_dir` availabl
 | `.devcontainer/` | Codespaces environment and installation script |
 | `R/analysis_config.R` | Configuration list, model selection, and shared settings |
 | `R/run_analyses.R` | Batch fitting and poststratification, with reuse of completed stages |
-| `R/00`–`R/03` scripts | Download inputs and build the survey and Stan data |
+| `R/00`–`R/03` scripts | Download inputs and build the synthetic survey and Stan data |
 | `R/04`–`R/06` scripts | Fit the model, prepare population cells, and poststratify |
 | `R/07`–`R/10` scripts | Summarise and plot completed results |
 | `models/` | Original and optimised Stan programs, shared `functions.stan`, and optimisation notes |
 | `data/raw/` | Small input files distributed with the repository |
-| `data/downloaded/` | Automatically downloaded surveys, population frame, and plotting reference data |
+| `data/downloaded/` | Automatically downloaded synthetic surveys, population frame, and plotting reference data |
 | `data/processed/` | Rebuildable intermediate data |
 | `output/` | Your fitted models, diagnostics, predictions, tables, and plots |
 
-The survey CSVs come from a pinned commit of the [original PoSSUM repository](https://github.com/robertocerinaprojects/PoSSUM). The population frame comes from this repository's [`data-v0.1.0` release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/data-v0.1.0). The workflow builds the training data directly from those synthetic survey records.
+The synthetic survey CSVs come from a pinned commit of the [original PoSSUM repository](https://github.com/robertocerinaprojects/PoSSUM). The population frame comes from this repository's [`data-v0.1.0` release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/data-v0.1.0). The workflow builds the training data directly from those synthetic survey records.
