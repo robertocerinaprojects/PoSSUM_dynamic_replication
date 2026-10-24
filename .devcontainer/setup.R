@@ -3,7 +3,7 @@
 
 # 1. Linux libraries required by the spatial R packages ----------------------
 system_packages <- c(
-  "make", "cmake", "pandoc", "libabsl-dev", "libssl-dev",
+  "make", "cmake", "pandoc", "gh", "libabsl-dev", "libssl-dev",
   "libgdal-dev", "gdal-bin", "libgeos-dev", "libproj-dev",
   "libsqlite3-dev", "libudunits2-dev"
 )
