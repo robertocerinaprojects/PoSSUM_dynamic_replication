@@ -60,7 +60,7 @@ for (i in seq_along(waves)) {
   )
 }
 
-# Population frame: approximately 348 MiB.
+# Population frame: approximately 200 MiB.
 download_input(
   paste0(
     "https://github.com/robertocerinaprojects/",
@@ -68,7 +68,7 @@ download_input(
     "data-v0.1.0/SF_extended_simple.rds"
   ),
   "SF_extended_simple.rds",
-  364466876
+  209356512
 )
 
 message("All six input files are available in data/downloaded/.")
