@@ -28,7 +28,9 @@ options(
   Ncpus = 2
 )
 
-packages <- c("data.table", "mltools", "posterior", "renv", "sf", "spdep", "geostan","ggplot2")
+packages <- 
+  c("data.table", "mltools", "posterior", "renv", "sf", "spdep", "geostan","ggplot2",
+    "fields", "mgcv","ggrepel")
 missing <- packages[!vapply(packages, requireNamespace, logical(1), quietly = TRUE)]
 if (length(missing)) install.packages(missing)
 
