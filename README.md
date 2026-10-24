@@ -58,12 +58,14 @@ The version should be `2.40.0`. Keep the working directory at the repository roo
 
 ## 3. Preview the 12 configurations
 
+Run the following in your R terminal -- 
+
 ```r
 source("R/run_analyses.R")
 run_analyses()
 ```
 
-This simply prints the plan. **It does not download data or fit anything.**
+this simply prints the plan. **It does not download data or fit anything.**
 
 | Synthetic survey period | High configuration | Moderate configuration |
 | --- | --- | --- |
