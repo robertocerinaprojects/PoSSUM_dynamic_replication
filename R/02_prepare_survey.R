@@ -1,22 +1,40 @@
 # Run from the repository root. Output: data/processed/survey.RData
-# First analysis: the final survey wave, vote2024; choose High or Moderate below.
+# Interactive example: analysis_id <- "pooled_high", then run this script.
+# Without a selection, use the final wave with High speculation.
 
 library(data.table)
 load("data/processed/context.RData")  # Includes OMNI_pred_scale from script 01.
 
 # 1. Identify this analysis ---------------------------------------------------
-survey_period <- "2024-10-17_2024-10-26"
-dep.var <- "vote2024"
-speculation <- "High"  # Choose "High" or "Moderate".
+# The runner supplies fixed settings for its batch. Interactive work rereads
+# the configuration file, so your edits take effect when you rerun this section.
+config <- if (exists("batch_config", inherits = FALSE)) batch_config else new.env(parent = baseenv())
+if (!exists("batch_config", inherits = FALSE)) sys.source("R/analysis_config.R", envir = config)
+if (!exists("analysis_id", inherits = FALSE)) analysis_id <- "wave5_high"
+analysis <- config$analysis_runs[config$analysis_runs$run_id == analysis_id, ]
+if (nrow(analysis) != 1L) stop("Unknown analysis_id: ", analysis_id)
+if (!analysis$ready || !analysis$model %in% names(config$model_files)) {
+  stop("This analysis has no enabled model configuration.")
+}
+survey_period <- analysis$survey_period
+speculation <- analysis$speculation
+dep.var <- config$dep.var
+model_type <- analysis$model
+model_file <- unname(config$model_files[model_type])
 
 # 2. Read the published synthetic survey ------------------------------------
-survey_file <- file.path(
-  "data/downloaded", paste0("survey_object.clean_", survey_period, ".csv")
-)
-survey_object.clean <- as.data.table(read.csv(
-  survey_file, na.strings = c("", "NA"), stringsAsFactors = FALSE,
-  check.names = FALSE
-))
+input_periods <- config$input_waves(analysis)
+survey_parts <- lapply(input_periods, function(period) {
+  survey_file <- file.path("data/downloaded", paste0("survey_object.clean_", period, ".csv"))
+  survey <- as.data.table(read.csv(survey_file, na.strings = c("", "NA"),
+                                 stringsAsFactors = FALSE, check.names = FALSE))
+  # Every record keeps its source wave. Do not average waves or remove records
+  # here: these are the already-published, cleaned synthetic surveys.
+  if (model_type == "temporal") survey[, poll_lab := period]
+  survey
+})
+survey_object.clean <- rbindlist(survey_parts, use.names = TRUE, fill = TRUE)
+rm(survey_parts)
 survey_object.clean$date <- as.Date(survey_object.clean$date)
 
 # 3. Select variables, apply the speculation rule, and remove incomplete rows
@@ -24,6 +42,7 @@ model.vars <- c("gender", "ethnicity", "age_bins", "college_grad",
                 "hh_income", "vote2020")
 selected_columns <- c("date", "state_electoral.college", "state_simple",
                       model.vars, dep.var)
+if (model_type == "temporal") selected_columns <- c(selected_columns, "poll_lab")
 # Start from the unfiltered survey each time, so switching modes is reversible.
 survey_object.clean.dep <- copy(survey_object.clean[, ..selected_columns])
 
@@ -56,7 +75,8 @@ survey_object.clean.dep <- merge(
 setorder(survey_object.clean.dep, state_electoral.college, state_simple, date)
 
 # 5. Save a separate prepared survey -----------------------------------------
-save(survey_object.clean.dep, survey_period, dep.var, speculation,
+save(survey_object.clean.dep, survey_period, dep.var, speculation, model_type,
+     model_file, input_periods,
      file = "data/processed/survey.RData")
 message("Saved ", nrow(survey_object.clean.dep), " survey records (", speculation,
         ") to data/processed/survey.RData")

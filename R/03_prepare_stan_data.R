@@ -116,8 +116,29 @@ train_data_list <- c(list(
   inv_sqrt_scaling_factor = icar.data$inv_sqrt_scale_factor
 ), id_list)
 
-model_file <- "models/model_ai.survey_structured_optimised.stan"
+# 7. Identify waves for the pooled model ------------------------------------
+# Reproduce the original ordering: the latest retained wave has ID 1.
+# The wave effect follows adjacent waves, not elapsed calendar days.
+poll_levels <- character()
+prediction_poll_id <- 1L
+if (model_type == "temporal") {
+  poll_levels <- unique(survey_object.clean.dep$poll_lab)
+  poll_end_dates <- as.Date(sub(".*_", "", poll_levels))
+  poll_levels <- poll_levels[order(poll_end_dates, decreasing = TRUE)]
+  if (length(poll_levels) < 2L || anyNA(poll_end_dates)) {
+    stop("The pooled model needs at least two retained survey waves.")
+  }
+  # Avoid silently predicting an earlier wave if the final wave was filtered out.
+  if (sub(".*_", "", poll_levels[1]) != sub(".*_", "", survey_period)) {
+    stop("No complete records remain in the latest requested wave.")
+  }
+  train_data_list$poll_id <- match(survey_object.clean.dep$poll_lab, poll_levels)
+  train_data_list$poll_N <- length(poll_levels)
+}
+
+# model_file was selected in analysis_config.R and saved by script 02.
 save(train_data_list, frame_levels, LP_labs, survey_period, dep.var,
-     speculation, model_file, file = "data/processed/training_data.RData")
+     speculation, model_file, model_type, input_periods, poll_levels,
+     prediction_poll_id, file = "data/processed/training_data.RData")
 message("Saved Stan inputs for ", N, " respondents (", speculation,
         ") to data/processed/training_data.RData")

@@ -5,6 +5,8 @@
 library(data.table)
 library(cmdstanr)
 library(posterior)
+config <- if (exists("batch_config", inherits = FALSE)) batch_config else new.env(parent = baseenv())
+if (!exists("batch_config", inherits = FALSE)) sys.source("R/analysis_config.R", envir = config)
 
 # 1. Read the fitted effects -------------------------------------------------
 fit <- readRDS(file.path(run_dir, "fit_object.rds"))
@@ -12,6 +14,10 @@ prediction_parameters <- c(
   "beta_s", "eta_s", "lambda_s", "xi_gen_s", "xi_eth_s",
   "xi_inc_s", "xi_age_s", "xi_v20_s", "xi_eta_s"
 )
+# The saved Stan data identifies pooled fits, including the original temporal
+# model if you choose it in the configuration. Single-wave fits have no delta_s.
+is_pooled <- "poll_N" %in% names(train_data_list)
+if (is_pooled) prediction_parameters <- c(prediction_parameters, "delta_s")
 
 # Extract the fitted effects, then arrange each parameter as an array
 # with posterior draw as its first dimension.
@@ -28,6 +34,15 @@ n_draws <- dim(pars_sims$beta_s)[1]
 outcomes <- train_data_list$V_labs
 voter_outcomes <- setdiff(outcomes, "stay home")
 interaction_outcomes <- train_data_list$INT + 1L
+
+# Pooled predictions describe the latest wave, estimated using all waves.
+# Preserve delta_s[s, 1, j - 1] from the original prediction script.
+wave_effect <- matrix(0, n_draws, length(outcomes) - 1L)
+if (is_pooled) {
+  stopifnot(prediction_poll_id == 1L, length(poll_levels) == train_data_list$poll_N)
+  wave_effect[,] <- pars_sims$delta_s[, prediction_poll_id, , drop = FALSE]
+}
+prediction_wave <- if (is_pooled) poll_levels[prediction_poll_id] else survey_period
 
 # Population cells must have known areas, categories and context predictors.
 id_columns <- c("area_id", "gen_id", "eth_id", "inc_id", "age_id", "v20_id")
@@ -64,7 +79,8 @@ ballot_allowed <- lapply(ballot_columns, function(column) {
 })
 
 # A single reporting date preserves the original national crosstab name.
-# It labels the survey endpoint; it does not add a time effect or repeat rows.
+# It labels the survey endpoint. Pooled temporal effects enter the logits below;
+# the population frame is not repeated over survey dates.
 SF_extended[, date := as.Date(sub(".*_", "", survey_period))]
 crosstabs <- c("date", "region", "state_electoral.college", "state_simple",
                "gender", "ethnicity", "college_grad", "hh_income",
@@ -73,7 +89,8 @@ crosstabs <- c("date", "region", "state_electoral.college", "state_simple",
 # Use every posterior draw. For each, sample one N_star column with replacement.
 # The same selected column is used for every crosstab in that simulated election.
 # The original had no fixed seed; setting one makes this pairing repeatable.
-prediction_seed <- 20241027L
+# prediction_seed is defined in R/analysis_config.R.
+prediction_seed <- config$prediction_seed
 set.seed(prediction_seed)
 frame_draws <- data.table(
   sim_id = seq_len(n_draws),
@@ -97,6 +114,8 @@ predict_cells <- function(s) {
       pars_sims$xi_inc_s[s, SF_extended$inc_id, j - 1L] +
       pars_sims$xi_age_s[s, SF_extended$age_id, j - 1L] +
       pars_sims$xi_v20_s[s, SF_extended$v20_id, j - 1L]
+
+    if (is_pooled) logits[, j] <- logits[, j] + wave_effect[s, j - 1L]
 
     if (j %in% interaction_outcomes) {
       logits[, j] <- logits[, j] + as.vector(
@@ -155,7 +174,7 @@ for (s in seq_len(n_draws)) {
 # 5. Save all simulated crosstabs and their population-draw pairings ----------
 crosstab.pred_list <- lapply(crosstab_draws, data.table::rbindlist)
 save(crosstab.pred_list, frame_draws, prediction_seed,
-     survey_period, dep.var, speculation,
+     survey_period, prediction_wave, dep.var, speculation,
      file = file.path(run_dir, "poststratification.RData"))
 message("Saved poststratification draws to ", run_dir)
 

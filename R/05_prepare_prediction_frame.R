@@ -1,4 +1,4 @@
-# Prepare the population cells for the single-wave vote2024 predictions.
+# Prepare population cells for single-wave or pooled vote2024 predictions.
 # Run from the repository root, after script 04, in the same R session.
 # If restarting R, first set run_dir to the saved fit's output folder.
 
