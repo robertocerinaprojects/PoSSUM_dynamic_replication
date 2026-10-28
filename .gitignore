@@ -61,3 +61,4 @@ rsconnect/
 # Models
 /models/model_ai.survey_structured
 /models/model_ai.survey_structured_optimised
+/models/model_ai.survey_structured_temporal_optimised
