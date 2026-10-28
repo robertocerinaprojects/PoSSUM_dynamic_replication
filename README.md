@@ -10,7 +10,7 @@
 
 Refit the PoSSUM Stan models from the published synthetic surveys, calculate population estimates, and explore the results in R. Everything runs inside a GitHub Codespace, so you do not need to install R or Stan on your own computer.
 
-**Also available: a free 2024 U.S. post-stratification frame that you can download and reuse in your own analyses.** See [the frame and download link below](#free-2024-post-stratification-frame).
+**Also available: a 2024 U.S. stratification frame that you can download and reuse in your own analyses.** See [the frame and download link below](#free-2024-post-stratification-frame).
 
 Choose how you want to use the repository:
 
@@ -22,7 +22,7 @@ The workflow covers data preparation, Stan fitting, poststratification, vote-sha
 
 ## Open-source 2024 post-stratification frame
 
-The 2024 U.S. post-stratification frame used in PoSSUM is **freely available for use in other analyses**, including other post-stratification studies and population-weighted summaries. You can use it independently of the paper's models and replication workflow.
+The 2024 U.S. post-stratification frame used in PoSSUM is **open-source and available for use in other analyses**, including other post-stratification studies and population-weighted summaries. You can use it independently of the paper's models and replication workflow.
 
 **[Download the frame: SF_extended_simple.rds](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/download/data-v0.1.0/SF_extended_simple.rds)** — approximately 200 MiB, in compressed RDS format for R. It is published as an asset in the repository's [data release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/data-v0.1.0).
 
