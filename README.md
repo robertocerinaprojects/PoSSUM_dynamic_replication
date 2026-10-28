@@ -10,29 +10,61 @@
 
 Refit the PoSSUM Stan models from the published synthetic surveys, calculate population estimates, and explore the results in R. Everything runs inside a GitHub Codespace, so you do not need to install R or Stan on your own computer.
 
-**Start here:** follow steps 1–7 below. Run one configuration first, check its diagnostics, then run the full set of 12 configurations.
+**Also available: a free 2024 U.S. post-stratification frame that you can download and reuse in your own analyses.** See [the frame and download link below](#free-2024-post-stratification-frame).
 
-The current workflow covers data preparation, model fitting, poststratification, summary tables, and the existing vote-share and Electoral College plots. The paper's remaining evaluation and cross-wave comparison scripts are still being incorporated. Running this README does not yet regenerate every figure in the paper.
+Choose how you want to use the repository:
+
+- **Refit the models and regenerate the figures:** follow steps 1–8. Start with one configuration, check its diagnostics, then run all 12.
+- **Regenerate the evaluation figures from saved predictions:** complete steps 1–2, restore the saved fits below, then go to [step 7](#7-reproduce-the-16-paper-evaluation-figures).
+- **View the existing evaluation figures:** download the small evaluation archive below. You can open those PDFs on your own computer without starting a Codespace.
+
+The workflow covers data preparation, Stan fitting, poststratification, vote-share and Electoral College plots, and the 16 paper evaluation figures: four prediction-accuracy comparisons, seven pollster comparisons, and five comparisons across survey waves.
+
+## Free 2024 post-stratification frame
+
+The 2024 U.S. post-stratification frame used in PoSSUM is **freely available for use in other analyses**, including other post-stratification studies and population-weighted summaries. You can use it independently of the paper's models and replication workflow.
+
+**[Download the frame: SF_extended_simple.rds](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/download/data-v0.1.0/SF_extended_simple.rds)** — approximately 200 MiB, in compressed RDS format for R. It is published as an asset in the repository's [data release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/data-v0.1.0).
+
+The frame contains **1,299,528 population cells**, described by demographic, geographic and past-vote characteristics, and **104 draws of plausible cell population counts** (`N_star.*`). These draws represent alternative plausible populations over the same cells, allowing analyses to account for uncertainty in their population sizes.
 
 ## Saved results
 
-Saved model fits and poststratified predictions for all 12 configurations
-are available in the [initial results release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/results-v0.1.0).
+The [initial results release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/results-v0.1.0) contains two separate archives:
 
-The release includes sampling settings, model snapshots, diagnostics,
-and a checksum for the results archive.
+| Archive | Contents | Size |
+| --- | --- | --- |
+| [PoSSUM-results-v0.1.0.tar.gz](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/download/results-v0.1.0/PoSSUM-results-v0.1.0.tar.gz) | Fits and poststratified predictions for all 12 configurations, diagnostics, sampling settings, Stan snapshots and run indexes | About 876 MiB |
+| [PoSSUM-evaluation-v0.1.0.tar.gz](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/download/results-v0.1.0/PoSSUM-evaluation-v0.1.0.tar.gz) | The 16 evaluation PDFs, two prediction-accuracy CSV tables and a repository commit record | About 177 KiB |
 
-To restore the results, download `PoSSUM-results-v0.1.0.tar.gz` into
-the repository root and extract it:
+These are initial computational results. All 12 runs completed with zero divergences and zero maximum-treedepth hits, but the maximum R-hat is approximately 1.034; further convergence assessment is pending. The figures use these saved fits.
+
+### Restore fits to regenerate the evaluation figures
+
+After Codespace setup in steps 1–2, open a **Bash terminal** at the repository root. The setup installs the GitHub CLI used here. For a fresh Codespace, download the fits and their checksum:
 
 ```bash
-tar -xzf PoSSUM-results-v0.1.0.tar.gz
+mkdir -p output/releases
+
+gh release download results-v0.1.0 \
+  --repo robertocerinaprojects/PoSSUM_dynamic_replication \
+  --pattern 'PoSSUM-results-v0.1.0.tar.gz*' \
+  --dir output/releases
+
+(cd output/releases && sha256sum -c PoSSUM-results-v0.1.0.tar.gz.sha256)
 ```
 
-This restores output/batch/. Follow section 6 to inspect a saved run
-and generate its tables and plots.
+When the checksum check reports `OK`, extract the archive from the repository root:
 
-These are initial results pending further convergence assessment.
+```bash
+tar -xzf output/releases/PoSSUM-results-v0.1.0.tar.gz
+```
+
+This restores `output/batch/`. Keep that directory structure: the run indexes point to paths within it. Return to your R session and follow [step 7](#7-reproduce-the-16-paper-evaluation-figures). You do not need to run the fitting or poststratification stages for this route. If you already completed the batch in this Codespace, use those existing results and skip the restore step.
+
+### View the archived figures
+
+Download the small evaluation archive in the table and extract it on your computer to open its PDFs. It restores `output/evaluation/`. This archive is sufficient for viewing the figures; regenerating them requires the saved predictions in the larger archive, or your own completed batch.
 
 ## 1. Open a Codespace
 
@@ -171,7 +203,7 @@ runs <- run_analyses(dry_run = FALSE)
 
 Completed fits and completed predictions are reused separately. An interrupted fit restarts its sampling; it cannot continue from the last MCMC iteration. If the fit finished but poststratification was interrupted, the fit is reused and poststratification starts again.
 
-Codespaces can stop after inactivity and has a [maximum continuous session of 12 hours](https://docs.github.com/en/codespaces/about-codespaces/understanding-the-codespace-lifecycle). All fits should finish long before that. 
+Codespaces can stop after inactivity and has a [maximum continuous session of 12 hours](https://docs.github.com/en/codespaces/about-codespaces/understanding-the-codespace-lifecycle). A stop interrupts any work still running; use the resume procedure above after restarting. 
 
 ## 6. Find results and make the tables and plots
 
@@ -247,7 +279,39 @@ If you restarted R, recover `runs` using the resume command in step 5 first. Rep
 
 To view a PDF, find it in the Explorer, right-click it, choose **Download**, and open it on your computer. CSV tables can also be downloaded this way.
 
-## 7. Save what you need and stop the Codespace
+## 7. Reproduce the 16 paper evaluation figures
+
+Use this section after completing all 12 batch analyses in step 5, or after restoring the saved fits above. These scripts read the saved poststratified predictions; they do not fit Stan models or repeat poststratification.
+
+From the repository root, run the following in **R**, in order:
+
+```r
+source("R/00_download_data.R")
+source("R/11_prepare_evaluation_data.R")
+source("R/12_plot_prediction_accuracy.R")
+source("R/13_plot_pollster_comparisons.R")
+source("R/14_plot_dynamic_comparisons.R")
+```
+
+Script 00 reuses existing downloads and obtains any missing input files, including the population frame required by script 14. Script 11 prepares the observed election results. Scripts 12–14 create the PDFs and download their archived reference data on first use.
+
+| Script | Figures | Saved configurations used |
+| --- | --- | --- |
+| [12_plot_prediction_accuracy.R](R/12_plot_prediction_accuracy.R) | Four two-panel comparisons of predicted and observed R-D margins, for all electoral areas and the seven swing states | `wave5_high`, `wave5_moderate`, `pooled_high`, `pooled_moderate` |
+| [13_plot_pollster_comparisons.R](R/13_plot_pollster_comparisons.R) | Six pollster comparisons: bias, RMSE, correlation, correct calls, interval coverage and density overlap; plus `delta.pdf`, comparing performance by FiveThirtyEight pollster rating | `wave5_high` |
+| [14_plot_dynamic_comparisons.R](R/14_plot_dynamic_comparisons.R) | Five comparisons across survey waves: national, gender, ethnicity, age and education | `wave1_high` through `wave5_high` |
+
+The outputs are:
+
+- `output/evaluation/prediction_accuracy/`: `wave5_high.pdf`, `wave5_moderate.pdf`, `pooled_high.pdf` and `pooled_moderate.pdf`, plus `area_predictions.csv` and `accuracy_summary.csv` containing the plotted values and accuracy measures.
+- `output/evaluation/`: the six `pollsters_*_comparison.pdf` files and `delta.pdf`.
+- `output/evaluation/`: `dynamic_exchangeability_national.pdf`, `dynamic_exchangeability_gender.pdf`, `dynamic_exchangeability_ethnicity.pdf`, `dynamic_exchangeability_age.pdf` and `dynamic_exchangeability_edu.pdf`.
+
+Wait for each script to finish before running the next. Repeating a plotting script replaces its existing outputs. You can also run its annotated sections individually to inspect the calculations. The setup script includes all required packages, including `gtools`, `bayestestR`, `circlize` and `MCMCpack`; rerun setup in Bash if you are using an older Codespace that lacks them.
+
+The evaluation keeps the original reference snapshots. Script 11 uses the DDHQ results dated **7 November 2024, 1:50 PM**. Scripts 13–14 use archived polling data, including `president_polls.csv` from the [data release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/data-v0.1.0). The scripts check these evaluation downloads against recorded checksums. Their outputs reflect the saved fits you select through the batch indexes; the current sampling settings are documented in step 4.
+
+## 8. Save what you need and stop the Codespace
 
 Downloaded inputs, processed data, and `output/` are excluded from Git. **Committing or pushing the repository does not back up your fitted models or results.** Save important results before deleting the Codespace or allowing it to expire.
 
@@ -260,10 +324,10 @@ q(save = "no")
 Then run this in the **terminal**:
 
 ```bash
-tar -czf PoSSUM-results.tar.gz output
+tar --exclude='output/releases' -czf PoSSUM-results.tar.gz output
 ```
 
-Find `PoSSUM-results.tar.gz` in the Explorer, right-click it, and choose **Download**. Keep this archive on your computer; do not commit it to Git. Alternatively, download individual result files from `output/`. Keep whole run folders if you want to retain their diagnostics and model snapshots.
+The backup excludes `output/releases/` to avoid including copies of the release archives. Find `PoSSUM-results.tar.gz` in the Explorer, right-click it, and choose **Download**. Keep this archive on your computer; do not commit it to Git. Alternatively, download individual result files from `output/`. Keep whole run folders if you want to retain their diagnostics and model snapshots.
 
 When finished, go to [your Codespaces](https://github.com/codespaces), open the Codespace's **…** menu, and choose **Stop codespace**. Closing the browser tab alone does not stop compute usage. A stopped Codespace still consumes storage allowance; delete it only after saving the files you need. See [GitHub's stop/start guide](https://docs.github.com/en/codespaces/developing-in-a-codespace/stopping-and-starting-a-codespace).
 
@@ -289,7 +353,7 @@ source("R/06_poststratify.R")
 
 You can open each script and run its annotated sections individually instead of sourcing the whole file. Keep scripts 05 and 06 in the same R session because the prepared population frame is held in memory.
 
-This manual route creates a timestamped run folder and leaves `run_dir` available for scripts 07–10. It does not use the batch runner's reuse mechanism. Use `run_analyses()` for the full configuration sweep.
+This manual route creates a timestamped run folder and leaves `run_dir` available for scripts 07–10. It does not use the batch runner's reuse mechanism. Use `run_analyses()` for the full configuration sweep. Evaluation scripts 11–14 use the batch indexes, so follow step 5 or restore the saved batch results before running them.
 
 ## Where to look in the repository
 
@@ -300,11 +364,16 @@ This manual route creates a timestamped run folder and leaves `run_dir` availabl
 | `R/run_analyses.R` | Batch fitting and poststratification, with reuse of completed stages |
 | `R/00`–`R/03` scripts | Download inputs and build the synthetic survey and Stan data |
 | `R/04`–`R/06` scripts | Fit the model, prepare population cells, and poststratify |
-| `R/07`–`R/10` scripts | Summarise and plot completed results |
+| `R/07`–`R/10` scripts | Summarise and plot a selected completed result |
+| `R/11`–`R/14` scripts | Prepare evaluation benchmarks and generate the 16 paper evaluation PDFs |
 | `models/` | Original and optimised Stan programs, shared `functions.stan`, and optimisation notes |
 | `data/raw/` | Small input files distributed with the repository |
 | `data/downloaded/` | Automatically downloaded synthetic surveys, population frame, and plotting reference data |
 | `data/processed/` | Rebuildable intermediate data |
-| `output/` | Your fitted models, diagnostics, predictions, tables, and plots |
+| `output/batch/` | Fitted models, diagnostics, predictions and run indexes for the batch |
+| `output/evaluation/` | The 16 paper evaluation PDFs and two prediction-accuracy tables |
+| `output/releases/` | Downloaded or locally prepared release archives |
+| `output/` | Generated results, excluded from Git |
 
-The synthetic survey CSVs come from a pinned commit of the [original PoSSUM repository](https://github.com/robertocerinaprojects/PoSSUM). The population frame comes from this repository's [`data-v0.1.0` release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/data-v0.1.0). The workflow builds the training data directly from those synthetic survey records.
+The synthetic survey CSVs come from a pinned commit of the [original PoSSUM repository](https://github.com/robertocerinaprojects/PoSSUM). The population frame and archived FiveThirtyEight presidential polls come from this repository's [`data-v0.1.0` release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/data-v0.1.0). The workflow builds the training data directly from those synthetic survey records.
+
