@@ -30,7 +30,7 @@ options(
 
 packages <- 
   c("data.table", "mltools", "posterior", "renv", "sf", "spdep", "geostan","ggplot2",
-    "fields", "mgcv","ggrepel")
+    "fields", "mgcv", "ggrepel", "gtools", "bayestestR", "circlize", "MCMCpack")
 missing <- packages[!vapply(packages, requireNamespace, logical(1), quietly = TRUE)]
 if (length(missing)) install.packages(missing)
 
