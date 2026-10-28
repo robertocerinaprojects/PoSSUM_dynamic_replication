@@ -6,7 +6,7 @@
 </p>
 
 
-# PoSSUM: Live Replication
+# PoSSUM: Dynamic Replication
 
 Refit the PoSSUM Stan models from the published synthetic surveys, calculate population estimates, and explore the results in R. Everything runs inside a GitHub Codespace, so you do not need to install R or Stan on your own computer.
 
