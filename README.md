@@ -6,6 +6,26 @@ Refit the PoSSUM Stan models from the published synthetic surveys, calculate pop
 
 The current workflow covers data preparation, model fitting, poststratification, summary tables, and the existing vote-share and Electoral College plots. The paper's remaining evaluation and cross-wave comparison scripts are still being incorporated. Running this README does not yet regenerate every figure in the paper.
 
+## Saved results
+
+Saved model fits and poststratified predictions for all 12 configurations
+are available in the [initial results release](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication/releases/tag/results-v0.1.0).
+
+The release includes sampling settings, model snapshots, diagnostics,
+and a checksum for the results archive.
+
+To restore the results, download `PoSSUM-results-v0.1.0.tar.gz` into
+the repository root and extract it:
+
+```bash
+tar -xzf PoSSUM-results-v0.1.0.tar.gz
+```
+
+This restores output/batch/. Follow section 6 to inspect a saved run
+and generate its tables and plots.
+
+These are initial results pending further convergence assessment.
+
 ## 1. Open a Codespace
 
 Sign in to GitHub and open [this repository](https://github.com/robertocerinaprojects/PoSSUM_dynamic_replication). If you want to keep your own code changes on GitHub, click **Fork** first and follow these steps from your fork.
