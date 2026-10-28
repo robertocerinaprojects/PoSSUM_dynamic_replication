@@ -10,7 +10,7 @@
 
 Refit the PoSSUM Stan models from the published synthetic surveys, calculate population estimates, and explore the results in R. Everything runs inside a GitHub Codespace, so you do not need to install R or Stan on your own computer.
 
-**Also available: a 2024 U.S. stratification frame that you can download and reuse in your own analyses.** See [the frame and download link below](#free-2024-post-stratification-frame).
+**Also available: a 2024 U.S. stratification frame that you can download and reuse in your own analyses.** See [the frame and download link below](#open-source-2024-post-stratification-frame).
 
 Choose how you want to use the repository:
 
@@ -204,6 +204,21 @@ runs <- run_analyses(dry_run = FALSE)
 Completed fits and completed predictions are reused separately. An interrupted fit restarts its sampling; it cannot continue from the last MCMC iteration. If the fit finished but poststratification was interrupted, the fit is reused and poststratification starts again.
 
 Codespaces can stop after inactivity and has a [maximum continuous session of 12 hours](https://docs.github.com/en/codespaces/about-codespaces/understanding-the-codespace-lifecycle). A stop interrupts any work still running; use the resume procedure above after restarting. 
+
+### Recover after an abrupt shutdown
+
+The batch runner creates `data/processed/analysis_batch.lock` to prevent two batches from using the shared working files at the same time. It normally removes this directory when the batch ends, but an abrupt shutdown can leave it behind.
+
+If restarting reports **“Another batch may be running”**, first confirm that no analysis is still running in another terminal or R session in this Codespace. Losing the browser connection alone does not mean the analysis has stopped.
+
+Only after confirming that no analysis is running, remove the leftover lock from **R**, with the working directory set to the repository root:
+
+```r
+unlink("data/processed/analysis_batch.lock", recursive = TRUE)
+```
+
+Then rerun the same `run_analyses(...)` command you used before. Removing the lock does not delete saved fits or predictions. The runner checks which stages completed successfully and reuses those results.
+
 
 ## 6. Find results and make the tables and plots
 

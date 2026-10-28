@@ -1,7 +1,7 @@
 # Run from the repository root.
 # Preview: source("R/run_analyses.R"); run_analyses()
 # One pooled run: run_analyses("pooled_high", dry_run = FALSE)
-# All eight: run_analyses(dry_run = FALSE)
+# All 12 configurations: run_analyses(dry_run = FALSE)
 # Repeat the same command to reuse completed fits and predictions.
 
 # Small bookkeeping helpers. These do not change the statistical calculations.
@@ -35,8 +35,8 @@ analysis_mark_complete <- function(run_dir, stage, signature, filenames) {
 }
 
 run_analyses <- function(ids = NULL, dry_run = TRUE) {
-  # 1. Choose configurations. The default is all eight runs for the figures.
-  config <- new.env(parent = baseenv())
+# 1. Choose configurations. The default is all 12 configurations.
+config <- new.env(parent = baseenv())
   sys.source("R/analysis_config.R", envir = config)
   if (is.null(ids)) ids <- config$analysis_runs$run_id[config$analysis_runs$ready]
   if (!length(ids) || anyNA(ids) || anyDuplicated(ids) ||
