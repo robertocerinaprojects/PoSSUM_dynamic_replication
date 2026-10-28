@@ -20,7 +20,7 @@ Choose how you want to use the repository:
 
 The workflow covers data preparation, Stan fitting, poststratification, vote-share and Electoral College plots, and the 16 paper evaluation figures: four prediction-accuracy comparisons, seven pollster comparisons, and five comparisons across survey waves.
 
-## Free 2024 post-stratification frame
+## Open-source 2024 post-stratification frame
 
 The 2024 U.S. post-stratification frame used in PoSSUM is **freely available for use in other analyses**, including other post-stratification studies and population-weighted summaries. You can use it independently of the paper's models and replication workflow.
 
